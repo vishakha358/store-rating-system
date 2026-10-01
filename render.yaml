@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: store-rating-system
+    env: node
+    plan: free
+    region: oregon
+    buildCommand: npm install && npm --prefix backend install && npm --prefix frontend install && npm run build
+    startCommand: npm --prefix backend run prisma:push && npm --prefix backend run prisma:seed && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: DATABASE_URL
+        fromDatabase:
+          name: store-rating-postgres
+          property: connectionString
+
+databases:
+  - name: store-rating-postgres
+    plan: free
+    region: oregon
+    databaseName: storerating
+    user: storerating_user
